@@ -8,7 +8,7 @@ import MainScene from './states/mainScene'
 
 class Game extends Phaser.Game {
   constructor () {
-    super(600, 400, Phaser.AUTO, 'game')
+    super(1024, 960, Phaser.AUTO, 'game')
 
     this.state.add('BootState', BootState, true)
     this.state.add('mainScene', MainScene)
