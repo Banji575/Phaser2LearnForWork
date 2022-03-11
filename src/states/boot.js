@@ -5,8 +5,10 @@ export default class Boot extends Phaser.State {
     this.load.image('table', '/assets/8ball/table.png')
     this.load.physics('table', '/assets/8ball/table.json')
     this.load.spritesheet('balls', './assets/8ball/balls.png', 26, 26, 5)
+    this.load.image('cue', './assets/8ball/cue.png')
     this.game.physics.startSystem(Phaser.Physics.P2JS)
     this.load.image('cushions', './assets/8ball/cushions.png')
+    this.load.image('fill', '/assets/8ball/fill.png')
     this.isDebug = true
   }
 
@@ -43,6 +45,13 @@ export default class Boot extends Phaser.State {
     ballVsBallMaterial.restitution = 0.9
 
     this.add.sprite(0, 0, 'cushions')
+    this.cue = this.add.sprite(0, 0, 'cue')
+    this.cue.anchor.y = 0.5
+
+    this.fill = this.add.sprite(0, 0, 'fill')
+    this.fill.anchor.y = 0.5
+    this.fillRect = new Phaser.Rectangle(0, 0, 332, 6)
+    this.fill.crop(this.fillRect)
 
     let y = 241
     this.makeBall(200, y, 1)
@@ -69,6 +78,8 @@ export default class Boot extends Phaser.State {
     this.makeBall(328, 305, 3)
 
     this.cueball = this.makeBall(576, 305, 5)
+
+    this.animLine = new Phaser.Line(this.cueball.x, this.cueball.y, this.cueball.x, this.cueball.y)
   }
 
   makeBall (x, y, color) {
@@ -93,8 +104,25 @@ export default class Boot extends Phaser.State {
     this.balls.forEach(this.positionShadow, this)
   }
 
+  update () {
+    this.updateCue()
+  }
+
   positionShadow (ball) {
     ball.shadow.x = ball.x + 4
     ball.shadow.y = ball.y + 4
+  }
+
+  updateCue () {
+    this.animLine.start.set(this.cueball.x, this.cueball.y)
+    this.animLine.end.set(this.input.activePointer.x, this.input.activePointer.y)
+    this.cue.position.copyFrom(this.animLine.start)
+    this.cue.rotation = this.animLine.angle
+
+    this.fill.position.copyFrom(this.animLine.start)
+    this.fill.rotation = this.animLine.angle
+
+    this.fillRect.width = this.animLine.length
+    this.fill.updateCrop()
   }
 }
